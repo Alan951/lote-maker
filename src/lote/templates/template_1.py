@@ -18,9 +18,24 @@ class Template1:
   SLOT_2_3 = [171.2, 16]
   SLOT_3_3 = [249.2, 16]
 
-  SLOTS = [SLOT_0_0, SLOT_1_0, SLOT_2_0, SLOT_3_0, SLOT_0_1, SLOT_1_1, SLOT_2_1, SLOT_3_1, SLOT_0_2, SLOT_1_2, SLOT_2_2, SLOT_3_2, SLOT_0_3, SLOT_1_3, SLOT_2_3, SLOT_3_3]
+  SLOTS = [
+    SLOT_0_0, SLOT_1_0, SLOT_2_0, SLOT_3_0, 
+    SLOT_0_1, SLOT_1_1, SLOT_2_1, SLOT_3_1, 
+    SLOT_0_2, SLOT_1_2, SLOT_2_2, SLOT_3_2, 
+    SLOT_0_3, SLOT_1_3, SLOT_2_3, SLOT_3_3]
 
   @staticmethod
-  def get_matrix():
-    return np.array(Template1.SLOTS).reshape(4, 4)
+  def coord2slot(x, y):
+    _x = 0
+    _y = 0
+
+    for slot in Template1.SLOTS:
+      if x == _x and _y == y:
+        return slot
+
+      _x += 1
+      
+      if _x == 4:
+        _x = 0
+        _y += 1
   

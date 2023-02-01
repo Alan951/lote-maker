@@ -4,6 +4,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import TABLOID, A4
 from reportlab.lib.utils import ImageReader
 from lote.card_gen import CardGenerator
+from copy import copy
 
 from os.path import join
 import argparse
@@ -22,9 +23,51 @@ class LoteMaker():
     self.load_template()
     #self.test()
 
-    #CardGenerator(self.cards).generate_set()
-    print(len(Template1.get_matrix()))
+    sets = []
+
+    for i in range(0, 52):
+      sets.append(CardGenerator(self.cards).generate_set())
+    
+    self.make(sets)
+    #print(len(Template1.get_matrix()))
     #print(Template1.SLOTS_MATRIX)
+
+  def make(self, sets):
+      
+
+    ratio = 730 / 440
+    width = 59
+    height = width * ratio
+
+    output = PdfFileWriter()
+    for index, set in enumerate(sets): # iterate sets to make the pages of pdf!
+      packet = io.BytesIO()
+      draw = canvas.Canvas(packet, pagesize=(450, 750))
+      page_template = copy(self.pdf_template.getPage(0))
+
+      for item in range(0, 16): # iterate the cards
+        draw.drawImage(
+          set[item].get('card'), 
+          set[item].get('x'), 
+          set[item].get('y'), 
+          width=width,
+          height=height)
+
+      draw.save()
+
+      packet.seek(0)
+      new_pdf = PdfFileReader(packet)
+      page_template.merge_page(new_pdf.getPage(0))
+
+      output.addPage(page_template)
+    
+    output_stream = open(self.args.output, "wb")
+    output.write(output_stream)
+    output_stream.close()
+
+    os.startfile(self.args.output)
+        
+    
 
   def test(self):
     packet = io.BytesIO()
